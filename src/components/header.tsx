@@ -7,6 +7,7 @@ import {
   CreditCard,
   Briefcase,
   PlusCircle,
+  LayoutDashboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,30 +40,34 @@ export function Header({ title }: { title: string }) {
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
+          <nav className="grid gap-6 text-base font-medium">
             <Link
-              href="#"
+              href="/dashboard"
               className="flex items-center gap-2 text-lg font-semibold"
             >
               <Package2 className="h-6 w-6" />
-              <span className="sr-only">Parihar Service Hub</span>
+              <span>Parihar Hub</span>
             </Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground">
+            <Link href="/dashboard" className="flex items-center gap-4 text-muted-foreground hover:text-foreground">
+              <LayoutDashboard className="h-5 w-5" />
               Dashboard
             </Link>
-            <Link href="#" className="hover:text-foreground">
+            <Link href="/dashboard/services" className="flex items-center gap-4 text-muted-foreground hover:text-foreground">
+              <Briefcase className="h-5 w-5" />
               Services
             </Link>
             <Link
-              href="#"
-              className="text-muted-foreground hover:text-foreground"
+              href="/dashboard/payments"
+              className="flex items-center gap-4 text-muted-foreground hover:text-foreground"
             >
+              <CreditCard className="h-5 w-5" />
               Payments
             </Link>
             <Link
-              href="#"
-              className="text-muted-foreground hover:text-foreground"
+              href="/dashboard/notifications"
+              className="flex items-center gap-4 text-muted-foreground hover:text-foreground"
             >
+              <Bell className="h-5 w-5" />
               Notifications
             </Link>
           </nav>
@@ -100,8 +105,8 @@ export function Header({ title }: { title: string }) {
                 ))}
               </ScrollArea>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-center justify-center">
-                <Link href="#">View all notifications</Link>
+              <DropdownMenuItem className="text-center justify-center" asChild>
+                <Link href="/dashboard/notifications">View all notifications</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -110,7 +115,7 @@ export function Header({ title }: { title: string }) {
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
                 <Avatar>
-                  <AvatarImage src="https://placehold.co/40x40" alt="@user" />
+                  <AvatarImage src="https://placehold.co/40x40" alt="@user" data-ai-hint="avatar" />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <span className="sr-only">Toggle user menu</span>

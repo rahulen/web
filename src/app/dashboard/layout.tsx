@@ -1,3 +1,5 @@
+'use client';
+
 import {
   SidebarProvider,
   Sidebar,
@@ -20,12 +22,15 @@ import {
   LogOut,
   Settings,
 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -41,31 +46,31 @@ export default function DashboardLayout({
               <SidebarMenu>
                 <SidebarMenuItem>
                   <Link href="/dashboard" passHref>
-                    <SidebarMenuButton isActive>
+                    <SidebarMenuButton isActive={pathname === '/dashboard'}>
                       <LayoutDashboard />
                       <span>Dashboard</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="#" passHref>
-                    <SidebarMenuButton>
+                  <Link href="/dashboard/services" passHref>
+                    <SidebarMenuButton isActive={pathname.startsWith('/dashboard/services')}>
                       <Briefcase />
                       <span>Services</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="#" passHref>
-                    <SidebarMenuButton>
+                  <Link href="/dashboard/payments" passHref>
+                    <SidebarMenuButton isActive={pathname.startsWith('/dashboard/payments')}>
                       <CreditCard />
                       <span>Payments</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="#" passHref>
-                    <SidebarMenuButton>
+                  <Link href="/dashboard/notifications" passHref>
+                    <SidebarMenuButton isActive={pathname.startsWith('/dashboard/notifications')}>
                       <Bell />
                       <span>Notifications</span>
                     </SidebarMenuButton>
@@ -95,7 +100,7 @@ export default function DashboardLayout({
               <SidebarFooter>
                 <div className="flex items-center gap-3 p-2">
                   <Avatar>
-                    <AvatarImage src="https://placehold.co/40x40" alt="@user" />
+                    <AvatarImage src="https://placehold.co/40x40" alt="@user" data-ai-hint="avatar" />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
