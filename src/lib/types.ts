@@ -5,6 +5,12 @@ export interface Update {
   message: string;
 }
 
+export interface Client {
+  name: string;
+  email: string;
+  avatar: string;
+}
+
 export interface Service {
   id: string;
   name: string;
@@ -13,6 +19,7 @@ export interface Service {
   paymentStatus: 'Paid' | 'Unpaid' | 'Overdue';
   amount: number;
   updates: Update[];
+  client: Client;
 }
 
 export interface Notification {

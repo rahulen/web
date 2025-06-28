@@ -1,4 +1,4 @@
-import type { Service, Notification } from './types';
+import type { Service, Notification, Client } from './types';
 
 export const mockServices: Service[] = [
   {
@@ -8,6 +8,7 @@ export const mockServices: Service[] = [
     status: 'In Progress',
     paymentStatus: 'Paid',
     amount: 2500,
+    client: { name: 'Innovate Corp', email: 'contact@innovate.com', avatar: 'https://placehold.co/40x40.png' },
     updates: [
       { id: 'U01', date: '2024-07-20', author: 'Team Member', message: 'Initial design mockups have been created and are pending review.' },
       { id: 'U02', date: '2024-07-22', author: 'Client', message: 'The mockups look great! Please proceed with development.' },
@@ -22,6 +23,7 @@ export const mockServices: Service[] = [
     status: 'Completed',
     paymentStatus: 'Paid',
     amount: 5000,
+    client: { name: 'Tech Solutions', email: 'hello@techsolutions.io', avatar: 'https://placehold.co/40x40.png' },
     updates: [
         { id: 'U05', date: '2024-06-10', author: 'Team Member', message: 'Project kickoff and requirements gathering completed.'},
         { id: 'U06', date: '2024-06-25', author: 'Team Member', message: 'UI/UX design for both platforms is finalized.'},
@@ -36,6 +38,7 @@ export const mockServices: Service[] = [
     status: 'Pending',
     paymentStatus: 'Unpaid',
     amount: 800,
+    client: { name: 'Startup Co.', email: 'founder@startupco.com', avatar: 'https://placehold.co/40x40.png' },
     updates: [
         { id: 'U09', date: '2024-07-29', author: 'Client', message: 'Service requested. Awaiting initial concepts.' },
     ]
@@ -47,6 +50,7 @@ export const mockServices: Service[] = [
     status: 'In Progress',
     paymentStatus: 'Paid',
     amount: 1200,
+    client: { name: 'Digital Agency', email: 'seo@digital.agency', avatar: 'https://placehold.co/40x40.png' },
     updates: [
       { id: 'U10', date: '2024-07-26', author: 'Team Member', message: 'Initial keyword research and site audit is complete.' },
       { id: 'U11', date: '2024-07-29', author: 'Team Member', message: 'On-page optimizations are being implemented.' },
@@ -59,6 +63,7 @@ export const mockServices: Service[] = [
     status: 'Cancelled',
     paymentStatus: 'Unpaid',
     amount: 600,
+    client: { name: 'Market Pro', email: 'manager@marketpro.com', avatar: 'https://placehold.co/40x40.png' },
     updates: [
       { id: 'U12', date: '2024-07-25', author: 'Client', message: 'We need to put this service on hold for now due to budget changes.' },
     ]

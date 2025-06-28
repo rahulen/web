@@ -31,10 +31,21 @@ import {
 import {
   Dialog,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ServiceUpdatesDialog } from '@/components/service-updates-dialog';
 import { Header } from '@/components/header';
 import { mockServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
+import Link from 'next/link';
+import { useRole } from '@/contexts/role-context';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 const statusColors: { [key: string]: string } = {
   'In Progress': 'bg-blue-100 text-blue-800',
@@ -48,6 +59,8 @@ const statusColors: { [key: string]: string } = {
 
 
 export default function ServicesPage() {
+  const { role } = useRole();
+  const [services, setServices] = React.useState<Service[]>(mockServices);
   const [selectedService, setSelectedService] = React.useState<Service | null>(null);
   const [isDialogOpen, setDialogOpen] = React.useState(false);
 
@@ -56,21 +69,33 @@ export default function ServicesPage() {
     setDialogOpen(true);
   };
   
+  const handleStatusChange = (serviceId: string, newStatus: Service['status']) => {
+    setServices(prevServices =>
+      prevServices.map(service =>
+        service.id === serviceId ? { ...service, status: newStatus } : service
+      )
+    );
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header title="Services" />
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <Card>
           <CardHeader>
-            <CardTitle>Services</CardTitle>
+            <CardTitle>{role === 'team-member' ? 'All Services' : 'My Services'}</CardTitle>
             <CardDescription>
-              A list of all services you have requested.
+              {role === 'team-member'
+                ? 'Manage all ongoing and past services for clients.'
+                : 'A list of all services you have requested.'
+              }
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
+                  {role === 'team-member' && <TableHead className="w-1/4">Client</TableHead>}
                   <TableHead>Service</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Payment</TableHead>
@@ -81,8 +106,22 @@ export default function ServicesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockServices.map((service) => (
+                {services.map((service) => (
                   <TableRow key={service.id}>
+                    {role === 'team-member' && (
+                       <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="hidden h-9 w-9 sm:flex">
+                            <AvatarImage src={service.client.avatar} alt={service.client.name} data-ai-hint="logo" />
+                            <AvatarFallback>{service.client.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="grid gap-1">
+                            <p className="text-sm font-medium leading-none">{service.client.name}</p>
+                            <p className="text-sm text-muted-foreground">{service.client.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                    )}
                     <TableCell className="font-medium">
                       <div className="font-medium">{service.name}</div>
                       <div className="hidden text-sm text-muted-foreground md:inline">
@@ -90,9 +129,27 @@ export default function ServicesPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`${statusColors[service.status]} border-none`}>
-                        {service.status}
-                      </Badge>
+                      {role === 'team-member' ? (
+                        <Select value={service.status} onValueChange={(value) => handleStatusChange(service.id, value as Service['status'])}>
+                          <SelectTrigger className="w-auto border-none p-0 focus:ring-0 focus:ring-offset-0 [&>span]:pl-2.5">
+                             <SelectValue asChild>
+                              <Badge variant="outline" className={`${statusColors[service.status]} border-none`}>
+                                {service.status}
+                              </Badge>
+                             </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="Cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant="outline" className={`${statusColors[service.status]} border-none`}>
+                          {service.status}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                        <Badge variant="outline" className={`${statusColors[service.paymentStatus]} border-none`}>
@@ -112,8 +169,10 @@ export default function ServicesPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          {service.paymentStatus === 'Unpaid' && (
-                            <DropdownMenuItem>Pay Now</DropdownMenuItem>
+                          {(service.paymentStatus === 'Unpaid' || service.paymentStatus === 'Overdue') && (
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/payments/${service.id}`}>Pay Now</Link>
+                            </DropdownMenuItem>
                           )}
                           <DropdownMenuItem onClick={() => handleViewUpdates(service)}>
                             View Updates
