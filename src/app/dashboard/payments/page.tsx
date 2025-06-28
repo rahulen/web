@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +23,7 @@ import { mockServices } from '@/lib/data';
 import Link from 'next/link';
 import { useRole } from '@/contexts/role-context';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const statusColors: { [key: string]: string } = {
   'Paid': 'bg-green-100 text-green-800',
@@ -29,8 +31,32 @@ const statusColors: { [key: string]: string } = {
   'Overdue': 'bg-red-100 text-red-800'
 };
 
-export default function PaymentsPage() {
+function PaymentsPageContent() {
   const { role } = useRole();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  React.useEffect(() => {
+    const status = searchParams.get('status');
+    const serviceId = searchParams.get('serviceId');
+    if (status) {
+      // Clear the query params from the URL
+      window.history.replaceState(null, '', '/dashboard/payments');
+    }
+
+    if (status === 'success' && serviceId) {
+      toast({
+        title: "Payment Successful",
+        description: `Your payment for service ${serviceId} was completed.`,
+      });
+    } else if (status === 'failed' || status === 'error') {
+      toast({
+        variant: "destructive",
+        title: "Payment Failed",
+        description: `Your payment for service ${serviceId} could not be processed. Please try again.`,
+      });
+    }
+  }, [searchParams, toast]);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -103,4 +129,13 @@ export default function PaymentsPage() {
       </main>
     </div>
   );
+}
+
+
+export default function PaymentsPage() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <PaymentsPageContent />
+    </React.Suspense>
+  )
 }

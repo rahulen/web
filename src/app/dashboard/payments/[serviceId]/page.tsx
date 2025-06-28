@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { mockServices } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,17 @@ import { Header } from '@/components/header';
 import Link from 'next/link';
 import type { Service } from '@/lib/types';
 import { useEffect, useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PaymentGatewayPage() {
   const params = useParams();
+  const router = useRouter();
+  const { toast } = useToast();
   const serviceId = params.serviceId as string;
+  
   const [service, setService] = useState<Service | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (serviceId) {
@@ -22,6 +27,41 @@ export default function PaymentGatewayPage() {
       setService(foundService);
     }
   }, [serviceId]);
+
+  const handlePayment = async () => {
+    if (!service) return;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/payment/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceId: service.id }),
+      });
+
+      const responseBody = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseBody.error || 'Failed to initiate payment.');
+      }
+      
+      const { redirectUrl } = responseBody;
+      
+      // In a real scenario with Paytm's SDK, you might open their checkout page.
+      // Here, we're redirecting to our mock callback flow.
+      router.push(redirectUrl);
+
+    } catch (error) {
+      console.error(error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+      toast({
+        variant: "destructive",
+        title: "Payment Error",
+        description: `Could not start the payment process: ${errorMessage}`,
+      });
+      setIsLoading(false);
+    }
+  };
 
   if (!service) {
     return (
@@ -67,10 +107,9 @@ export default function PaymentGatewayPage() {
                 <span>${service.amount.toFixed(2)}</span>
               </div>
               <Separator />
-               <Button asChild className="w-full" size="lg">
-                <Link href="https://paytm.com" target="_blank" rel="noopener noreferrer">
-                  Pay with Paytm
-                </Link>
+               <Button onClick={handlePayment} disabled={isLoading} className="w-full" size="lg">
+                 {isLoading ? <Loader2 className="animate-spin mr-2" /> : null}
+                 {isLoading ? 'Processing...' : 'Pay with Paytm'}
               </Button>
                <Button variant="outline" asChild className="w-full">
                 <Link href="/dashboard/payments">
