@@ -42,6 +42,7 @@ import { ServiceUpdatesDialog } from '@/components/service-updates-dialog';
 import { Header } from '@/components/header';
 import { mockServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
+import Link from 'next/link';
 
 const statusColors: { [key: string]: string } = {
   'In Progress': 'bg-blue-100 text-blue-800',
@@ -119,8 +120,10 @@ export default function DashboardPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          {service.paymentStatus === 'Unpaid' && (
-                            <DropdownMenuItem>Pay Now</DropdownMenuItem>
+                          {(service.paymentStatus === 'Unpaid' || service.paymentStatus === 'Overdue') && (
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/payments/${service.id}`}>Pay Now</Link>
+                            </DropdownMenuItem>
                           )}
                           <DropdownMenuItem onClick={() => handleViewUpdates(service)}>
                             View Updates

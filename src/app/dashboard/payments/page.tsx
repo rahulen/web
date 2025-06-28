@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Header } from '@/components/header';
 import { mockServices } from '@/lib/data';
+import Link from 'next/link';
 
 const statusColors: { [key: string]: string } = {
   'Paid': 'bg-green-100 text-green-800',
@@ -62,8 +63,10 @@ export default function PaymentsPage() {
                     </TableCell>
                     <TableCell className="text-right">${service.amount.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
-                      {service.paymentStatus === 'Unpaid' && (
-                        <Button size="sm">Pay Now</Button>
+                      {(service.paymentStatus === 'Unpaid' || service.paymentStatus === 'Overdue') && (
+                        <Button size="sm" asChild>
+                          <Link href={`/dashboard/payments/${service.id}`}>Pay Now</Link>
+                        </Button>
                       )}
                     </TableCell>
                   </TableRow>
